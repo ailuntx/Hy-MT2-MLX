@@ -37,7 +37,18 @@ def strip_front_matter(text: str) -> str:
 
 def build_readme(official_readme: str, repo_id: str, source_repo: str) -> str:
     repo_name = repo_id.split("/", 1)[-1]
-    variant = repo_name.replace("Hy-MT2-", "")
+    variant_key = repo_name.replace("Hy-MT2-", "")
+    variant_label = variant_key.replace("-4bit", " 4-bit").replace("-8bit", " 8-bit").replace(
+        "-bfloat16", " bfloat16"
+    )
+    best_for = {
+        "1.8B-bfloat16": "high-quality 1.8B baseline",
+        "1.8B-8bit": "smaller 1.8B checkpoint",
+        "1.8B-4bit": "smallest 1.8B checkpoint and Space load smoke test",
+        "7B-bfloat16": "high-precision 7B conversion",
+        "7B-8bit": "7B size/quality middle ground",
+        "7B-4bit": "smallest 7B checkpoint",
+    }.get(variant_key, "Apple Silicon MLX inference")
     front_matter = (
         "---\n"
         "license: apache-2.0\n"
@@ -49,21 +60,22 @@ def build_readme(official_readme: str, repo_id: str, source_repo: str) -> str:
         "- mlx\n"
         "- apple-silicon\n"
         "- mlx-lm\n"
-        "- hunyuan_v1_dense\n"
         "- translation\n"
+        "- hunyuan_v1_dense\n"
+        "language:\n"
+        "- multilingual\n"
         "---\n\n"
     )
     note = (
         f"Part of the [Hy-MT2 MLX](https://huggingface.co/collections/mlx-community/hy-mt2-6a15a173a4e2d27031541558) collection.\n\n"
         f"# {repo_name} (MLX)\n\n"
-        f"Apple MLX weights for [`{source_repo}`](https://github.com/Tencent-Hunyuan/Hy-MT2), "
-        "Tencent Hunyuan's multilingual translation model. This is a community conversion for Apple Silicon; "
-        "the original model card, license, and upstream repository remain authoritative for non-MLX usage.\n\n"
+        f"Apple MLX weights for [{source_repo}](https://github.com/Tencent-Hunyuan/Hy-MT2), "
+        "Tencent Hunyuan's multilingual translation model.\n\n"
         "## TL;DR\n\n"
         "| | |\n"
         "|---|---|\n"
-        f"| **Variant** | `{variant}` |\n"
-        "| **Architecture** | Hy-MT2 dense / `hunyuan_v1_dense` |\n"
+        f"| **Variant** | {variant_label} |\n"
+        f"| **Best for** | {best_for} |\n"
         "| **Runtime** | [`mlx-lm`](https://github.com/ml-explore/mlx-lm) |\n"
         "| **Official code** | [`Tencent-Hunyuan/Hy-MT2`](https://github.com/Tencent-Hunyuan/Hy-MT2) |\n"
         "| **MLX code** | [`ailuntx/Hy-MT2-MLX`](https://github.com/ailuntx/Hy-MT2-MLX) |\n"
@@ -71,11 +83,15 @@ def build_readme(official_readme: str, repo_id: str, source_repo: str) -> str:
         "## Quick Start\n\n"
         "```bash\n"
         "pip install mlx-lm\n"
+        "PROMPT=$'Translate the following text into English. Note that you should only output the translated result without any additional explanation:\\n\\n今天天气真好。'\n"
         f"mlx_lm.generate --model {repo_id} \\\n"
-        "  --prompt \"Translate the following text into English. Note that you should only output the translated result without any additional explanation:\\n\\n今天天气真好。\" \\\n"
-        "  --max-tokens 128 --temp 0.7 --top-p 0.6 --top-k 20\n"
+        "  --prompt \"$PROMPT\" \\\n"
+        "  --max-tokens 128 \\\n"
+        "  --temp 0.7 \\\n"
+        "  --top-p 0.6 \\\n"
+        "  --top-k 20\n"
         "```\n\n"
-        "For conversion and staging scripts:\n\n"
+        "For conversion and staging tools:\n\n"
         "```bash\n"
         "git clone https://github.com/ailuntx/Hy-MT2-MLX.git\n"
         "cd Hy-MT2-MLX\n"
@@ -84,20 +100,24 @@ def build_readme(official_readme: str, repo_id: str, source_repo: str) -> str:
         "## Variants\n\n"
         "| Variant | Best for |\n"
         "|---|---|\n"
-        "| `Hy-MT2-1.8B-bfloat16` | high-quality local baseline for 1.8B |\n"
-        "| `Hy-MT2-1.8B-8bit` | smaller 1.8B checkpoint with modest quality tradeoff |\n"
-        "| `Hy-MT2-1.8B-4bit` | smallest 1.8B checkpoint and Space load smoke tests |\n"
-        "| `Hy-MT2-7B-bfloat16` | converted high-precision 7B checkpoint; requires more memory |\n"
-        "| `Hy-MT2-7B-8bit` | 7B quality/size middle ground |\n"
-        "| `Hy-MT2-7B-4bit` | smallest 7B checkpoint |\n\n"
+        "| [`Hy-MT2-1.8B-bfloat16`](https://huggingface.co/mlx-community/Hy-MT2-1.8B-bfloat16) | high-quality 1.8B baseline |\n"
+        "| [`Hy-MT2-1.8B-8bit`](https://huggingface.co/mlx-community/Hy-MT2-1.8B-8bit) | smaller 1.8B checkpoint |\n"
+        "| [`Hy-MT2-1.8B-4bit`](https://huggingface.co/mlx-community/Hy-MT2-1.8B-4bit) | smallest 1.8B checkpoint |\n"
+        "| [`Hy-MT2-7B-bfloat16`](https://huggingface.co/mlx-community/Hy-MT2-7B-bfloat16) | high-precision 7B conversion |\n"
+        "| [`Hy-MT2-7B-8bit`](https://huggingface.co/mlx-community/Hy-MT2-7B-8bit) | 7B size/quality middle ground |\n"
+        "| [`Hy-MT2-7B-4bit`](https://huggingface.co/mlx-community/Hy-MT2-7B-4bit) | smallest 7B checkpoint |\n\n"
         "## Conversion Notes\n\n"
         "| Component | Source | MLX handling |\n"
         "|---|---|---|\n"
-        "| model weights | official Hy-MT2 dense checkpoint | converted with `mlx_lm.convert` |\n"
+        "| model weights | official dense Hy-MT2 checkpoint | converted with MLX/`mlx-lm` tooling |\n"
         "| tokenizer/config | official checkpoint | copied through for `mlx-lm` loading |\n"
         "| quantized variants | bfloat16 MLX baseline | derived with MLX quantization settings |\n\n"
-        "The default conversion follows the official 1.8B/7B inference settings where applicable: "
-        "`temperature=0.7`, `top_p=0.6`, `top_k=20`, and `repetition_penalty=1.05`.\n\n"
+        "## Validation\n\n"
+        "Local Apple Silicon is the intended runtime. The Hy-MT2 HF Space starts and loads the model on Linux CPU fallback, "
+        "but `cpu-basic` can exceed request timeouts even for very small generation tests.\n\n"
+        "## License and Citation\n\n"
+        "License follows the upstream Tencent Hunyuan release. Cite the original Hy-MT2 project for the model and cite "
+        "[`ailuntx/Hy-MT2-MLX`](https://github.com/ailuntx/Hy-MT2-MLX) for this MLX conversion tooling.\n\n"
         "## Original Model Card\n\n"
     )
     return front_matter + note + strip_front_matter(official_readme)
