@@ -115,8 +115,10 @@ def build_readme(official_readme: str, repo_id: str, source_repo: str) -> str:
         "## Validation\n\n"
         "Local Apple Silicon is the intended runtime. The Hy-MT2 HF Space starts and loads the model on Linux CPU fallback, "
         "but `cpu-basic` can exceed request timeouts even for very small generation tests.\n\n"
-        "## License and Citation\n\n"
-        "License follows the upstream Tencent Hunyuan release. Cite the original Hy-MT2 project for the model and cite "
+        "## License\n\n"
+        "License follows the upstream Tencent Hunyuan release.\n\n"
+        "## Citation\n\n"
+        "Cite the original Hy-MT2 project for the model and cite "
         "[`ailuntx/Hy-MT2-MLX`](https://github.com/ailuntx/Hy-MT2-MLX) for this MLX conversion tooling.\n\n"
         "## Original Model Card\n\n"
     )
