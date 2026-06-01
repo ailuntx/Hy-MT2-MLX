@@ -5,13 +5,13 @@ models with `mlx-lm`.
 
 ## Supported first targets
 
-- `tencent/Hy-MT2-1.8B`
-- `tencent/Hy-MT2-7B`
+- `Tencent-Hunyuan/Hy-MT2-1.8B`
+- `Tencent-Hunyuan/Hy-MT2-7B`
 
 Both use `model_type: hunyuan_v1_dense`, which is supported by recent `mlx-lm`
 versions.
 
-`tencent/Hy-MT2-30B-A3B` uses `model_type: hy_v3` and should be handled as a
+`Tencent-Hunyuan/Hy-MT2-30B-A3B` uses `model_type: hy_v3` and should be handled as a
 separate MoE target after confirming MLX architecture support.
 
 ## Download official weights
@@ -33,7 +33,7 @@ modelscope download \
 ```bash
 python scripts/convert_mlx.py \
   --hf-path /Volumes/usb_main/home/index_mlx/models/Hy-MT2-1.8B-official \
-  --mlx-path /Volumes/usb_main/home/index_mlx/models/Hy-MT2-1.8B-bfloat16 \
+  --mlx-path /Volumes/usb_main/home/index_mlx/models/Hy-MT2-1.8B-bf16 \
   --dtype bfloat16
 ```
 
@@ -51,7 +51,7 @@ python scripts/convert_mlx.py \
 
 ```bash
 python scripts/infer_mlx.py \
-  --model /Volumes/usb_main/home/index_mlx/models/Hy-MT2-1.8B-bfloat16 \
+  --model /Volumes/usb_main/home/index_mlx/models/Hy-MT2-1.8B-bf16 \
   --prompt "Translate the following text into English. Note that you should only output the translated result without any additional explanation:\n\n今天天气真好。" \
   --max-tokens 128
 ```
@@ -60,9 +60,9 @@ python scripts/infer_mlx.py \
 
 ```bash
 python scripts/stage_mlx_repo.py \
-  --mlx-path /Volumes/usb_main/home/index_mlx/models/Hy-MT2-1.8B-bfloat16 \
+  --mlx-path /Volumes/usb_main/home/index_mlx/models/Hy-MT2-1.8B-bf16 \
   --official-path /Volumes/usb_main/home/index_mlx/models/Hy-MT2-1.8B-official \
   --stage-path /Volumes/usb_main/home/index_mlx/huggingface/Hy-MT2-1.8B \
   --repo-id mlx-community/Hy-MT2-1.8B \
-  --source-repo tencent/Hy-MT2-1.8B
+  --source-repo Tencent-Hunyuan/Hy-MT2-1.8B
 ```
